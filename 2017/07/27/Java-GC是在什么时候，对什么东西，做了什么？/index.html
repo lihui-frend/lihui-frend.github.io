@@ -28,4 +28,20 @@
 <p>&emsp;&emsp;标记操作和“标记-清除”算法一致，后续操作不只是直接清理对象，而是在清理无用对象完成后让所有存活的对象都向一端移动，并更新引用其对象的指针。<br> 主要缺点：在标记-清除的基础上还需进行对象的移动，成本相对较高，好处则是不会产生内存碎片。</p>
 <p>分代收集算法</p>
 <p>&emsp;&emsp;根据对象的存活周期的不同将内存划分为几块。一般把java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的收集算法。在新生代，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就选用复制算法，只需要付出少量存活对象的复制成本就可以完成收集。而老年代中因为对象存活率高、没有额外空间对他进行分配担保，就必须使用“标记-整理”算法进行回收。</p>
+<hr>
+<ul>
+<li>Java有四种类型的垃圾回收器：</li>
+</ul>
+<p>串行垃圾回收器（Serial Garbage Collector）<br>并行垃圾回收器（Parallel Garbage Collector）<br>并发标记扫描垃圾回收器（CMS Garbage Collector）<br>G1垃圾回收器（G1 Garbage Collector）</p>
+<p>1、串行垃圾回收器<br>&emsp;&emsp;串行垃圾回收器通过持有应用程序所有的线程进行工作。它为单线程环境设计，只使用一个单独的线程进行垃圾回收，通过冻结所有应用程序线程进行工作，所以可能不适合服务器环境。它最适合的是简单的命令行程序。</p>
+<p>通过JVM参数-XX:+UseSerialGC可以使用串行垃圾回收器。</p>
+<p>2、并行垃圾回收器<br>&emsp;&emsp;并行垃圾回收器也叫做 throughput collector 。它是JVM的默认垃圾回收器。与串行垃圾回收器不同，它使用多线程进行垃圾回收。相似的是，它也会冻结所有的应用程序线程当执行垃圾回收的时候</p>
+<p>3、并发标记扫描垃圾回收器<br>&emsp;&emsp;并发标记垃圾回收使用多线程扫描堆内存，标记需要清理的实例并且清理被标记过的实例。并发标记垃圾回收器只会在下面两种情况持有应用程序所有线程。</p>
+<p>当标记的引用对象在tenured区域；<br>在进行垃圾回收的时候，堆内存的数据被并发的改变。<br>相比并行垃圾回收器，并发标记扫描垃圾回收器使用更多的CPU来确保程序的吞吐量。如果我们可以为了更好的程序性能分配更多的CPU，那么并发标记上扫描垃圾回收器是更好的选择相比并发垃圾回收器。</p>
+<p>通过JVM参数 XX:+USeParNewGC 打开并发标记扫描垃圾回收器。</p>
+<p>4、G1垃圾回收器<br>&emsp;&emsp;G1垃圾回收器适用于堆内存很大的情况，他将堆内存分割成不同的区域，并且并发的对其进行垃圾回收。G1也可以在回收内存之后对剩余的堆内存空间进行压缩。并发扫描标记垃圾回收器在STW情况下压缩内存。G1垃圾回收会优先选择第一块垃圾最多的区域</p>
+<p>通过JVM参数 –XX:+UseG1GC 使用G1垃圾回收器</p>
+<p>四种Java垃圾回收器，需要根据应用场景，硬件性能和吞吐量需求来决定使用哪一种。</p>
+<p>运行的垃圾回收器类型<br>配置  描述<br>-XX:+UseSerialGC  串行垃圾回收器<br>-XX:+UseParallelGC  并行垃圾回收器<br>-XX:+UseConcMarkSweepGC 并发标记扫描垃圾回收器<br>-XX:ParallelCMSThreads= 并发标记扫描垃圾回收器 =为使用的线程数量<br>-XX:+UseG1GC  G1垃圾回收器<br>GC的优化配置<br>配置  描述<br>-Xms  初始化堆内存大小<br>-Xmx  堆内存最大值<br>-Xmn  新生代大小<br>-XX:PermSize  初始化永久代大小<br>-XX:MaxPermSize 永久代最大容量</p>
+<p>使用JVM GC参数的例子<br>java -Xmx12m -Xms3m -Xmn1m -XX:PermSize=20m -XX:MaxPermSize=20m -XX:+UseSerialGC -jar java-application.jar</p>
 </div><div class="tags"><a href="/tags/《深入理解Java虚拟机》/">《深入理解Java虚拟机》</a></div><div class="post-nav"><a class="next" href="/2017/07/25/jvm内存结构/">jvm内存结构</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/《深入理解Java虚拟机》/" style="font-size: 15px;">《深入理解Java虚拟机》</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/07/27/Java-GC是在什么时候，对什么东西，做了什么？/">Java GC是在什么时候，对什么东西，做了什么？</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/25/jvm内存结构/">jvm内存结构</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2017 <a href="/." rel="nofollow">Fuck.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"></a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
