@@ -2,35 +2,22 @@
 <p>按照Java虚拟机规范的描述，JVM自动管理的内存将会包括以下几个运行时数据区域。</p>
 <img src="/2017/07/25/jvm内存结构/jvm内存结构.jpg">
 <hr>
-<ul>
-<li><strong>程序计数器</strong><br>&emsp;&emsp;程序计数器（Program Counter Register）是JVM中一块较小的内存区域，保存着当前线程执行的虚拟机字节码指令的内存地址。Java多线程的实现，其实是通过线程间的轮流切换并分配处理器执行时间的方式来实现的，在任何时刻，处理器都只会执行一个线程中的指令。在多线程场景下，为了保证线程切换回来后，还能恢复到原先状态，找到原先执行的指令，所以每个线程都会设立一个程序计数器，并且各个线程之间不会互相影响，程序计数器为”线程私有”的内存区域。<br>　　如果当前线程正在执行Java方法，则程序计数器保存的是虚拟机字节码的内存地址，如果正在执行的是Native方法（非Java方法，JVM底层有许多非Java编写的函数实现），计数器则为空。程序计数器是唯一一个在Java规范中没有规定任何OutOfMemory场景的区域。
-　　</li>
-</ul>
+<p><strong>程序计数器</strong><br>&emsp;&emsp;程序计数器（Program Counter Register）是JVM中一块较小的内存区域，保存着当前线程执行的虚拟机字节码指令的内存地址。Java多线程的实现，其实是通过线程间的轮流切换并分配处理器执行时间的方式来实现的，在任何时刻，处理器都只会执行一个线程中的指令。在多线程场景下，为了保证线程切换回来后，还能恢复到原先状态，找到原先执行的指令，所以每个线程都会设立一个程序计数器，并且各个线程之间不会互相影响，程序计数器为”线程私有”的内存区域。<br>　　如果当前线程正在执行Java方法，则程序计数器保存的是虚拟机字节码的内存地址，如果正在执行的是Native方法（非Java方法，JVM底层有许多非Java编写的函数实现），计数器则为空。程序计数器是唯一一个在Java规范中没有规定任何OutOfMemory场景的区域。
+　　</p>
 <hr>
-<ul>
-<li><strong>虚拟机栈</strong><br>&emsp;&emsp;虚拟机栈（Java Virtual Machine Stacks）和线程是紧密联系的，每创建一个线程时就会对应创建一个Java栈，所以Java栈也是”线程私有”的内存区域，这个栈中又会对应包含多个栈帧，每调用一个方法时就会往栈中创建并压入一个栈帧，栈帧是用来存储方法数据和部分过程结果的数据结构，每一个方法从调用到最终返回结果的过程，就对应一个栈帧从入栈到出栈的过程。</li>
-</ul>
-<p>　　虚拟机栈是一个后入先出的数据结构，线程运行过程中，只有一个栈帧是处于活跃状态的，被称为”当前活动帧栈”，当前活动帧栈始终是虚拟机栈的栈顶元素。<br>　　<br>存放于栈中的东西如下：</p>
+<p><strong>虚拟机栈</strong><br>&emsp;&emsp;虚拟机栈（Java Virtual Machine Stacks）和线程是紧密联系的，每创建一个线程时就会对应创建一个Java栈，所以Java栈也是”线程私有”的内存区域，这个栈中又会对应包含多个栈帧，每调用一个方法时就会往栈中创建并压入一个栈帧，栈帧是用来存储方法数据和部分过程结果的数据结构，每一个方法从调用到最终返回结果的过程，就对应一个栈帧从入栈到出栈的过程。<br>　　虚拟机栈是一个后入先出的数据结构，线程运行过程中，只有一个栈帧是处于活跃状态的，被称为”当前活动帧栈”，当前活动帧栈始终是虚拟机栈的栈顶元素。　　<br>存放于栈中的东西如下：</p>
 <ol>
 <li>每个线程包含一个栈区,栈中只保存基础数据类型的对象和自定义对象的引用(不是对象)。对象都存放在堆区中。</li>
 <li>每个栈中的数据(基础数据类型和对象引用)都是私有的，其他栈不能访问。</li>
-<li><p>方法的形式参数，方法调用完后从栈空间回收。</p>
-</li>
-<li><p>引用对象的地址，引用完后，栈空间地址立即被回收，堆空间等待GC。</p>
-</li>
+<li>方法的形式参数，方法调用完后从栈空间回收。</li>
+<li>引用对象的地址，引用完后，栈空间地址立即被回收，堆空间等待GC。</li>
 </ol>
 <hr>
-<ul>
-<li><strong>本地方法栈</strong><br>&emsp;&emsp;本地方法栈（Native Method Stack）和虚拟机栈的作用相似，不过虚拟机栈是为Java方法服务的，而本地方法栈是为Native方法服务的。</li>
-</ul>
+<p><strong>本地方法栈</strong><br>&emsp;&emsp;本地方法栈（Native Method Stack）和虚拟机栈的作用相似，不过虚拟机栈是为Java方法服务的，而本地方法栈是为Native方法服务的。</p>
 <hr>
-<ul>
-<li><strong>方法区</strong><br>&emsp;&emsp;方法区（Method Area）是用于存储类结构信息的地方，包括所有的class，常量池、静态变量、构造函数等类型信息，还存放线程所执行的字节码指令，类型信息是由类加载器在类加载时从类文件中提取出来的。<br>&emsp;&emsp;方法区是线程共享的。</li>
-</ul>
+<p><strong>方法区</strong><br>&emsp;&emsp;方法区（Method Area）是用于存储类结构信息的地方，包括所有的class，常量池、静态变量、构造函数等类型信息，还存放线程所执行的字节码指令，类型信息是由类加载器在类加载时从类文件中提取出来的。<br>&emsp;&emsp;方法区是线程共享的。</p>
 <hr>
-<ul>
-<li><strong>堆</strong></li>
-</ul>
+<p><strong>堆</strong></p>
 <p>&emsp;&emsp;堆（heap）是存储java实例或者对象的地方，是GC的主要区域，同样是线程共享的内存区域。存储的全部是对象，每个对象包含一个与之对应的class信息。Jvm只有一个堆区（heap）被所有线程共享，堆区中不存放基本类型和对象引用，只存放对象本身</p>
 <hr>
 </div><div class="tags"><a href="/tags/《深入理解Java虚拟机》/">《深入理解Java虚拟机》</a></div><div class="post-nav"><a class="pre" href="/2017/07/27/Java-GC是在什么时候，对什么东西，做了什么？/">Java GC是在什么时候，对什么东西，做了什么？</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/《深入理解Java虚拟机》/" style="font-size: 15px;">《深入理解Java虚拟机》</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/08/28/Java反射机制/">Java反射机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/07/JVM类加载机制/">JVM类加载机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/27/Java-GC是在什么时候，对什么东西，做了什么？/">Java GC是在什么时候，对什么东西，做了什么？</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/25/jvm内存结构/">jvm内存结构</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 链接</i></div><ul></ul><a href="https://github.com/lihui-frend" title="Github" target="_blank">Github</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2017 <a href="/." rel="nofollow">努力，奋斗.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"></a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
